@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Node, Link } from '../network-graph/network-graph.component';
 
 @Component({
@@ -6,15 +6,8 @@ import { Node, Link } from '../network-graph/network-graph.component';
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.scss'],
 })
-export class HomePageComponent implements OnInit {
-  links: Link[] = [
-    { source: 'A', target: 'B', value: 1 },
-    { source: 'B', target: 'C', value: 1 },
-    { source: 'C', target: 'E', value: 1 },
-    { source: 'E', target: 'G', value: 1 },
-    { source: 'A', target: 'G', value: 1 },
-    { source: 'E', target: 'J', value: 1 },
-  ];
+export class HomePageComponent {
+  links: Link[] = [];
   nodes: Node[] = [
     { id: 'A', group: '1' },
     { id: 'B', group: '1' },
@@ -28,7 +21,23 @@ export class HomePageComponent implements OnInit {
     { id: 'J', group: '2' },
   ];
 
-  constructor() {}
+  constructor() {
+    this.createLinks();
+  }
 
-  ngOnInit(): void {}
+  createLinks() {
+    const links: Link[] = [];
+
+    for (const source of this.nodes) {
+      for (const target of this.nodes) {
+        if (Math.random() > 0.9) {
+          const value = Math.random() * 10;
+          const link = { source: source.id, target: target.id, value };
+          links.push(link);
+        }
+      }
+    }
+
+    this.links = links;
+  }
 }
