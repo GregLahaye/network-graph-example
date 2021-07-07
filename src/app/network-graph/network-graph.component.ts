@@ -1,4 +1,11 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 
 import * as d3 from 'd3';
 import {
@@ -28,6 +35,8 @@ interface DragEvent extends D3DragEvent<SVGCircleElement, Node, Node> {}
 export class NetworkGraphComponent implements OnChanges {
   @Input() links: Link[] = [];
   @Input() nodes: Node[] = [];
+
+  @Output() selectionChange = new EventEmitter<string>();
 
   width = 1000;
   height = 400;
@@ -82,6 +91,7 @@ export class NetworkGraphComponent implements OnChanges {
       .join('circle')
       .attr('r', 5)
       .attr('fill', color)
+      .on('click', this.handleNodeClick.bind(this))
       .call((simulation: any) => this.drag(simulation));
 
     node.append('title').text((d) => d.id);
@@ -124,5 +134,9 @@ export class NetworkGraphComponent implements OnChanges {
 
   clearNetworkGraph() {
     this.svg?.remove();
+  }
+
+  handleNodeClick(_: unknown, node: Node) {
+    this.selectionChange.emit(node.id);
   }
 }

@@ -21,6 +21,8 @@ export class HomePageComponent {
     { id: 'J', group: '2' },
   ];
 
+  selection = '';
+
   constructor() {
     this.createLinks();
   }
@@ -39,5 +41,9 @@ export class HomePageComponent {
     }
 
     this.links = links;
+  }
+
+  handleSelectionChange(id: string) {
+    this.selection = id;
   }
 }

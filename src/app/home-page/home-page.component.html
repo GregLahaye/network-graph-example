@@ -1,3 +1,5 @@
-<app-network-graph [links]="links" [nodes]="nodes"></app-network-graph>
+<app-network-graph [links]="links" [nodes]="nodes" (selectionChange)="handleSelectionChange($event)"></app-network-graph>
 
 <button (click)="createLinks()">Reset</button>
+
+<p *ngIf="selection">Selection: {{selection}}</p>
