@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import * as d3 from 'd3';
 import {
+  Selection,
   Simulation,
   SimulationNodeDatum,
   SimulationLinkDatum,
@@ -24,16 +25,26 @@ interface DragEvent extends D3DragEvent<SVGCircleElement, Node, Node> {}
   templateUrl: './network-graph.component.html',
   styleUrls: ['./network-graph.component.scss'],
 })
-export class NetworkGraphComponent implements OnInit {
+export class NetworkGraphComponent implements OnChanges {
   @Input() links: Link[] = [];
   @Input() nodes: Node[] = [];
 
   width = 1000;
   height = 400;
 
+  svg?: Selection<SVGSVGElement, unknown, HTMLElement, any>;
+
   constructor() {}
 
-  ngOnInit(): void {
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.links || changes.nodes) {
+      this.renderNetworkGraph();
+    }
+  }
+
+  renderNetworkGraph() {
+    this.clearNetworkGraph();
+
     const color = (d: Node) => {
       const scale = d3.scaleOrdinal(d3.schemeCategory10);
       return scale(d.group);
@@ -48,12 +59,12 @@ export class NetworkGraphComponent implements OnInit {
       .force('charge', d3.forceManyBody())
       .force('center', d3.forceCenter(this.width / 2, this.height / 2));
 
-    const svg = d3
+    this.svg = d3
       .select('#root')
       .append('svg')
       .attr('viewBox', [0, 0, this.width, this.height] as any);
 
-    const link = svg
+    const link = this.svg
       .append('g')
       .attr('stroke', '#999')
       .attr('stroke-opacity', 0.6)
@@ -62,7 +73,7 @@ export class NetworkGraphComponent implements OnInit {
       .join('line')
       .attr('stroke-width', (d) => Math.sqrt(d.value));
 
-    const node = svg
+    const node = this.svg
       .append('g')
       .attr('stroke', '#fff')
       .attr('stroke-width', 1.5)
@@ -109,5 +120,9 @@ export class NetworkGraphComponent implements OnInit {
       .on('start', dragStarted)
       .on('drag', dragged)
       .on('end', dragEnded);
+  }
+
+  clearNetworkGraph() {
+    this.svg?.remove();
   }
 }
